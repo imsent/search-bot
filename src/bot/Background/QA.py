@@ -4,17 +4,6 @@ import json
 import spacy
 
 
-def calculate_precision_recall(actual_answers, predicted_answers):
-    true_positives = len(set(actual_answers) & set(predicted_answers))
-    false_positives = len(predicted_answers) - true_positives
-    false_negatives = len(actual_answers) - true_positives
-
-    precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
-    recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
-
-    return precision, recall
-
-
 nlp = spacy.load("ru_core_news_lg")
 
 with open("src/bot/Background/employees_info.json", "r") as file:
@@ -26,11 +15,12 @@ texts = []
 for industry, departments in data.items():
     for department, employees in departments.items():
         for employee, info in employees.items():
-            text = f"{industry} {department} {employee} {info['Должность']}"
+            text = f"{employee} работает в отделе {department}, подразделения {industry}, занимает должность {info['Должность']} и выполняет функции:"
             for function in info['Функции']:
-                text += f" {function}"
-            texts.append(text)
-            doc = nlp(text.lower())
+                text += f" {function},"
+            text = text[:-1] + '.'
+            doc = nlp(text)
+            texts.append(f"ФИО: {employee}, Отдел: {department}, подразделение: {department}")
             embedding = doc.vector
             embeddings.append(embedding)
 
