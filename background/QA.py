@@ -6,7 +6,7 @@ nlp = spacy.load("ru_core_news_lg")
 conn = psycopg2.connect(
     user=conf.ps_user,
     password=conf.ps_pass,
-    host=conf.ps_host,
+    host=conf.host,
     port=conf.ps_port,
     database=conf.ps_db
 )

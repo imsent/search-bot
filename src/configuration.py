@@ -14,9 +14,9 @@ class Configuration:
     logging_level = int(env('LOGGING_LEVEL', logging.INFO))
     token: str = env('BOT_TOKEN')
 
+    host: str = env('HOST')
     ps_user: str = env('POSTGRES_USER')
     ps_pass: str = env('POSTGRES_PASSWORD')
-    ps_host: str = env('POSTGRES_HOST')
     ps_port: str = env('POSTGRES_PORT')
     ps_db: str = env('POSTGRES_DATABASE')
 
