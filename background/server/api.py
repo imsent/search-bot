@@ -5,4 +5,5 @@ app = FastAPI()
 
 @app.get("/search/{item}")
 async def send_answer(item):
-    return {"answer": search(item)}
+    result = await search(item)
+    return {"answer": result}
