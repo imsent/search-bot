@@ -19,6 +19,7 @@ class Configuration:
     ps_pass: str = env('POSTGRES_PASSWORD')
     ps_port: str = env('POSTGRES_PORT')
     ps_db: str = env('POSTGRES_DATABASE')
+    ps_cname: str = env('POSTGRES_COLECCTION_NAME')
 
 
 conf = Configuration()

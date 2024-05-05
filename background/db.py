@@ -1,13 +1,11 @@
 from src.configuration import conf
-import asyncpg
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_postgres import PGVector
 
-
-async def run(query_embedding):
-    conn = await asyncpg.connect(user=conf.ps_user,
-                                 password=conf.ps_pass,
-                                 host=conf.host,
-                                 port=conf.ps_port,
-                                 database=conf.ps_db)
-    values = await conn.fetch(f"SELECT content, 1 - (embedding <=> '{query_embedding}') AS cosine_similarity FROM embeddings ORDER BY cosine_similarity DESC LIMIT 1")
-    await conn.close()
-    return values[0][0]
+embeddings = HuggingFaceEmbeddings(model_name="DeepPavlov/rubert-base-cased")
+vectorstore = PGVector(
+    embeddings=embeddings,
+    collection_name=conf.ps_cname,
+    connection=f"postgresql+psycopg://{conf.ps_user}:{conf.ps_pass}@{conf.host}:{conf.ps_port}/{conf.ps_db}",
+    use_jsonb=True,
+)
