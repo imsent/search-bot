@@ -19,5 +19,8 @@ async def find_handler(message: types.Message):
     answer = await url(f"http://{conf.host}:8080/search/{message.text}")
 
     await msg.edit_text(
-        "По вашему запросы ничего не найдено. Пожалуйста, проверьте правильность введенной вами информации. Если все введено верно, то попробуйте написать запрос по-другому." if len(
-            answer) == 0 else f"Найден сотрудник, соответствующий вашему запросу:\n{'\n'.join(answer['answer'])}")
+        f"Найдены сотрудники, соответствующие вашему запросу:")
+    for x in answer['answer']:
+        await message.answer(f'{x['name']}\n✉️ {x["mail"]}\nТел: {x["number"]}\nКомпания: {x["company"]}\nДолжность: {x["post"]}')
+
+
