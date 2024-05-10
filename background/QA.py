@@ -14,4 +14,5 @@ qa = RetrievalQA.from_chain_type(
 
 async def search(query):
     responses = qa.invoke({"query": query})
-    return [x.page_content for x in responses['source_documents']]
+    print(responses['result'])
+    return [x.metadata for x in responses['source_documents']]
