@@ -1,4 +1,4 @@
-from src.configuration import conf
+from background.src.configuration import conf
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_postgres import PGVector
 

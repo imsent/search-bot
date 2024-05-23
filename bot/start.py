@@ -4,8 +4,8 @@ import logging
 
 from aiogram import Bot
 
-from src.bot.dispatcher import get_dispatcher
-from src.configuration import conf
+from src.dispatcher import get_dispatcher
+from configuration import conf
 
 
 async def start_bot():
