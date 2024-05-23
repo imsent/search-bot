@@ -1,8 +1,8 @@
-from background.src.configuration import conf
+from src.configuration import conf
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_postgres import PGVector
 
-embeddings = HuggingFaceEmbeddings(model_name="DeepPavlov/rubert-base-cased")
+embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large")
 vectorstore = PGVector(
     embeddings=embeddings,
     collection_name=conf.ps_cname,

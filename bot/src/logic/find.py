@@ -2,8 +2,8 @@ from aiogram import Router, types
 import aiohttp
 from aiogram.fsm.context import FSMContext
 
-from bot.configuration import conf
-from bot.src.keyboards import kb, kb2
+from configuration import conf
+from src.keyboards import kb, kb2
 from aiogram import F
 
 find_router = Router(name='find')
@@ -34,7 +34,7 @@ async def find_handler(message: types.Message, state: FSMContext):
         f"Найдены сотрудники, соответствующие вашему запросу:")
     for x in answer:
         await message.answer(
-            f'{x['name']}\n✉️ {x["mail"]}\nТел: {x["number"]}\nКомпания: {x["company"]}\nДолжность: {x["post"]}\nПодразделение: {x["industry"]}\nФункции: {x['funcs']}')
+            f'{x["name"]}\n✉️ {x["mail"]}\nТел: {x["number"]}\nКомпания: {x["company"]}\nДолжность: {x["post_dep"]}\nПодразделение: {x["industry"]}\nФункции: {x["funcs"]}')
     await state.set_state("output_results")
     msg = await message.answer(text="Нашли ли вы необходимого сотрудника?", reply_markup=kb)
     await state.update_data(text=answer_text.replace('?', ''), id=msg.message_id)
