@@ -1,34 +1,46 @@
 from langchain_community.llms import Ollama
 from background.db import vectorstore
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
+import langchain.chains.retrieval
 import re
 
-prompt = ChatPromptTemplate.from_template("""Перечисли ID и должность сотрудников, которые явно подходят для ответа на вопрос:
-
+template = """
 <context>
-{context}
+{document}
 </context>
 
-Вопрос: {input}
-Ответ в виде списка
-""")
+Перечисли ID сотрудников из context, которые явно подходят для ответа на вопрос: {question}
+"""
 
+user_history = {}
+
+prompt = PromptTemplate(
+    input_variables=["document", "question"], template=template
+)
 
 model = Ollama(model="mistral:instruct", temperature=0)
 
-retriever = vectorstore.as_retriever(search_kwargs={'k': 15})
+retriever = vectorstore.as_retriever(search_kwargs={'k': 20})
 
-document_chain = create_stuff_documents_chain(model, prompt)
-retrieval_chain = create_retrieval_chain(retriever, document_chain)
+chain = prompt | model | StrOutputParser()
 
 
-async def search(query):
-    response = retrieval_chain.invoke({"input": query})
-    # print(response['answer'])
-    # print(response)
-    h = str(response["answer"])
+async def search(query, user_id, correction=None):
+    if correction is not None:
+        retrieved_docs = user_history[user_id]
+    else:
+        user_history[user_id] = retriever.invoke(query)
+        retrieved_docs = retriever.invoke(query)
+
+    llm_answer = chain.invoke({"document": [x.page_content for x in retrieved_docs], "question": query})
+
+    print(llm_answer)
+    print(retrieved_docs)
+    print(query)
+    h = llm_answer
     ids = []
 
     for x in range(h.count("ID")):
@@ -37,9 +49,8 @@ async def search(query):
         except:
             pass
         h = h[h.find('ID') + 8:]
-    result = [x for x in response['context'] if x.metadata['id'] in ids]
+    result = [x for x in retrieved_docs if x.metadata['id'] in ids]
     if not result:
-        result = response['context'][:10]
+        result = retrieved_docs[:10]
 
     return [x.metadata for x in result]
-
