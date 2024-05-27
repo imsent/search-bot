@@ -1,11 +1,10 @@
-from langchain_community.llms import Ollama
-from background.db import vectorstore
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
-import langchain.chains.retrieval
 import re
+
+from langchain_community.llms import Ollama
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+
+from background.db import vectorstore
 
 template = """
 <context>

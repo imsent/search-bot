@@ -14,13 +14,13 @@ else:
     app = FastAPI()
 
 
-    @app.get("/search/{item}")
-    async def send_answer(item):
-        result = await search(item)
+    @app.get("/search/{item}/{id}")
+    async def send_answer(item, id):
+        result = await search(item, id)
         return {"answer": result}
 
 
-    @app.get("/search/{item}/correction/{keys}")
-    async def send_answer(item, keys):
-        result = await search(item, keys)
+    @app.get("/search/{first}/{id}/{second}")
+    async def send_answer_correction(first, id, second):
+        result = await search(first, id, second)
         return {"answer": result}
