@@ -10,7 +10,7 @@ services:
 
   server:
     build:
-      context: /background
+      context: /server
       dockerfile: Dockerfile
     env_file:
       - 2.env

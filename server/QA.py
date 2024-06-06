@@ -1,26 +1,37 @@
-import re
-
 from langchain_community.llms import Ollama
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 
-from background.db import vectorstore
-
-template = """
-<context>
-{document}
-</context>
-
-Перечисли ID сотрудников из context, которые явно подходят для ответа на вопрос: {question}
-"""
+from server.db import vectorstore
 
 user_history = {}
+
+template = """
+Контекст:
+
+{document}
+
+Задача:
+
+Пожалуйста, извлеките ID сотрудников, которые подходят для ответа на вопрос:
+
+{question}
+
+Формат ответа:
+
+Список ID подходящих сотрудников.
+
+Пример ответа:
+ID сотрудников: [12345, 67890, 11223]
+
+Ответ:
+"""
 
 prompt = PromptTemplate(
     input_variables=["document", "question"], template=template
 )
 
-model = Ollama(model="mistral:instruct", temperature=0)
+model = Ollama(model="phi3:14b", temperature=0)
 
 retriever = vectorstore.as_retriever(search_kwargs={'k': 20})
 
@@ -41,15 +52,12 @@ async def search(query, user_id, correction=None):
     print(query)
     h = llm_answer
     ids = []
-
-    for x in range(h.count("ID")):
-        try:
-            ids.append(int(re.sub(r"\D", "", h[h.find('ID') + 3:h.find('ID') + 8])))
-        except:
-            pass
-        h = h[h.find('ID') + 8:]
+    try:
+        ids = list(map(int, h[h.find("[") + 1: h.find(']')].replace('.', '').split(',')))
+    except:
+        pass
+    print(ids)
     result = [x for x in retrieved_docs if x.metadata['id'] in ids]
-    if not result:
-        result = retrieved_docs[:10]
+    print(result)
 
     return [x.metadata for x in result]
